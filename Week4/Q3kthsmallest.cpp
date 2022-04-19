@@ -1,24 +1,34 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
+#include <queue>
 using namespace std;
+
 int main()
 {
-    int t, n, temp, k;
-    vector<int> v;
+    int t;
     cin >> t;
-    while (t)
+    while (t--)
     {
+        priority_queue<int> pq;
+        int n;
         cin >> n;
+        int arr[n];
         for (int i = 0; i < n; i++)
-        {
-            cin >> temp;
-            v.push_back(temp);
-        }
+            cin >> arr[i];
+        int k;
         cin >> k;
-        nth_element(v.begin(), v.begin() + k - 1, v.end());
-        t--;
-        cout<<v[k-1]<<endl;
-        v.clear();
+        for (int i = 0; i < k; i++)
+        {
+            pq.push(arr[i]);
+        }
+
+        for (int i = k; i < n; i++)
+        {
+            if (arr[i] < pq.top())
+            {
+                pq.pop();
+                pq.push(arr[i]);
+            }
+        }
+        cout << pq.top() << endl;
     }
 }
