@@ -1,52 +1,90 @@
-#include <bits/stdc++.h>
+#include<iostream>
+#include<bits/stdc++.h>
 using namespace std;
 
-int bellman_ford(int **graph, int source, int destination, int vertices) {
-    int dist[vertices];
-    for (int i = 0; i < vertices; i++) {
-        dist[i] = INT_MAX;
+int minDisIndex(int *dis,bool *vis,int v)
+{
+    int i;
+    int minDis=INT_MAX;
+    int minIndex=-1;
+    for(i=0;i<v;i++)
+    {
+        if(vis[i]==false && dis[i]<=minDis)
+        {
+            minDis=dis[i];
+            minIndex=i;
+        }
     }
-    dist[source] = 0;
-    for (int i = 0; i < vertices - 1; i++) {
-        for (int j = 0; j < vertices; j++) {
-            for (int k = 0; k < vertices; k++) {
-                if (dist[j] != INT_MAX && graph[j][k] != 0 && dist[j] + graph[j][k] < dist[k]) {
-                    dist[k] = dist[j] + graph[j][k];
+    return minIndex;
+}
+
+void dijkstra(vector<vector<int>> mat,int v,int s)
+{
+    int dis[v];
+    bool vis[v];
+    int parent[v];
+    int i,j;
+    for(i=0;i<v;i++)
+    {
+        dis[i]=INT_MAX;
+        vis[i]=false;
+        parent[i]=-1;
+    }
+    
+    dis[s]=0;
+    parent[s]=s;
+
+    for(i=0;i<v;i++)
+    {
+        int m=minDisIndex(dis,vis,v);
+        vis[m]=true;
+        for(j=0;j<v;j++)
+        {
+            if(dis[m]!=INT_MAX && !vis[j] && mat[m][j])
+            {
+                if(dis[j]>dis[m]+mat[m][j])
+                {
+                    dis[j]=dis[m]+mat[m][j];
+                    parent[j]=m;
                 }
             }
         }
     }
-    for (int i = 0; i < vertices; i++) {
-        for (int j = 0; j < vertices; j++) {
-            if (dist[j] != INT_MAX && graph[j][i] != 0 && dist[j] + graph[j][i] < dist[i]) {
-                return -1;
-            }
+    
+    for(i=0;i<v;i++)
+    {
+        if(i==s)
+        {
+            cout<<i+1<<" : "<<dis[i]<<endl;
+            continue;
         }
+        cout<<i+1;
+        j=i;
+        while(parent[j]!=s)
+        {
+            cout<<" "<<parent[j]+1;
+            j=parent[j];
+        }
+        cout<<" "<<s+1<<" : "<<dis[i]<<endl;
     }
-    return dist[destination];
 }
-int main() {
-    int vertices, edges;
-    cin >> vertices >> edges;
-    int **graph = new int *[vertices];
-    for (int i = 0; i < vertices; i++) {
-        graph[i] = new int[vertices];
-        for (int j = 0; j < vertices; j++) {
-            graph[i][j] = 0;
-        }
-    }
-    for (int i = 0; i < edges; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        graph[u][v] = w;
-    }
-    int source, destination;
-    cin >> source >> destination;
-    int ans = bellman_ford(graph, source, destination, vertices);
-    if (ans == INT_MAX) {
-        cout << "-1";
-    } else {
-        cout << ans;
-    }
+
+int main()
+{
+    int i,j;
+
+    int v;
+    cin>>v;
+
+    vector<vector<int>> mat(v,vector<int> (v));
+    for(i=0;i<v;i++)
+    for(j=0;j<v;j++)
+    cin>>mat[i][j];
+
+    int s;
+    cin>>s;
+
+    dijkstra(mat,v,s-1);
+
     return 0;
 }
